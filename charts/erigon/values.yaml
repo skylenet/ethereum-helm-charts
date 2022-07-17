@@ -19,6 +19,9 @@ image:
 extraArgs: []
   #- --goerli
 
+# -- start rpcdemon locally for better performance https://github.com/ledgerwatch/erigon/blob/devel/cmd/rpcdaemon/README.md#running-locally
+localRPCDaemon: false
+
 # -- Extra args for the rpcdaemon container
 extraArgsRPCDaemon: []
   #- --http.corsdomain=yourdomain.tld

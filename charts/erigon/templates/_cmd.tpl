@@ -8,6 +8,21 @@
 {{- if .Values.p2pNodePort.enabled }}
   . /env/init-nodeport;
 {{- end }}
+{{- if .Values.localRPCDaemon }}
+  rpcdaemon
+  --datadir=/data
+  --private.api.addr=127.0.0.1:9090
+  --http.addr=0.0.0.0
+  --http.port={{ include "erigon.httpPort" . }}
+  --http.vhosts=*
+  --metrics
+  --metrics.addr=0.0.0.0
+  --metrics.port={{ include "erigon.metricsPortRPCDaemon" . }}
+{{- range .Values.extraArgsRPCDaemon }}
+  {{ . }}
+{{- end }}
+  &
+{{- end}}
   exec erigon
   --datadir=/data
 {{- if .Values.p2pNodePort.enabled }}
@@ -46,4 +61,5 @@
 {{- range .Values.extraArgsRPCDaemon }}
   {{ . }}
 {{- end }}
+
 {{- end }}

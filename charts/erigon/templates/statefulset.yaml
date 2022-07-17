@@ -81,6 +81,7 @@ spec:
             - name: storage
               mountPath: "/data"
       {{- end }}
+
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -115,6 +116,14 @@ spec:
             - name: metrics
               containerPort: {{ include "erigon.metricsPort" . }}
               protocol: TCP
+            {{- if .Values.localRPCDaemon }}
+            - name: http-rpc
+              containerPort: {{ include "erigon.httpPort" . }}
+              protocol: TCP
+            - name: metrics-rpcd
+              containerPort: {{ include "erigon.metricsPortRPCDaemon" . }}
+              protocol: TCP
+            {{- end }}
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
@@ -136,6 +145,7 @@ spec:
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
           {{- end }}
+        {{- if not .Values.localRPCDaemon }}
         - name: {{ .Chart.Name }}-rpcd
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -176,6 +186,7 @@ spec:
           {{- end }}
           {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
+          {{- end }}
           {{- end }}
       {{- if .Values.extraContainers }}
         {{ toYaml .Values.extraContainers | nindent 8}}
